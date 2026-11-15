@@ -1,0 +1,13 @@
+test_auth_and_registration (test_app.SIGOATestCase.test_auth_and_registration) ... ok
+test_events_crud_and_google_url (test_app.SIGOATestCase.test_events_crud_and_google_url) ... ok
+test_file_upload_per_user (test_app.SIGOATestCase.test_file_upload_per_user) ... ok
+test_google_auth_and_forgot_password (test_app.SIGOATestCase.test_google_auth_and_forgot_password) ... ok
+test_google_demo_rejected_when_disabled (test_app.SIGOATestCase.test_google_demo_rejected_when_disabled) ... ok
+test_lgpd_compliance (test_app.SIGOATestCase.test_lgpd_compliance) ... ok
+test_multi_user_isolation (test_app.SIGOATestCase.test_multi_user_isolation) ... ok
+test_password_reset_token_is_single_use_and_response_is_neutral (test_app.SIGOATestCase.test_password_reset_token_is_single_use_and_response_is_neutral) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.434s
+
+OK

@@ -1,0 +1,420 @@
+=== PAGE 1 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+UNIVERSIDADE DO ESTADO DE MATO GROSSO — UNEMAT
+CURSO DE ENGENHARIA DE SOFTWARE
+SIGOA
+Sistema de Gerenciamento de Organização Acadêmica
+Do Projeto ao Desenvolvimento: Backlog e Sprint 1
+Entrega:ProductBacklog+Blueprint+Sprint1+Review/Retrospectiva+PlanejamentodaSprint2
+Acadêmicos:
+YuriSardinhaMilanieEmanuelFaria
+Cáceres—MT
+2026
+
+=== PAGE 2 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+1. Contexto e direcionamento do produto
+OSIGOA—SistemadeGerenciamentodeOrganizaçãoAcadêmica—foidefinidocomoumaaplicaçãoweb
+responsivadestinadaacentralizarcompromissosacadêmicosquenormalmenteficamdispersos entrediferentes
+canais.OMVP temcomofluxocentral:autenticação→agenda →criaçãodeevento→edição/exclusão,com
+organizaçãoporcategorias elembretes.
+Opresentedocumentotransformaasdecisõesarquiteturais járegistradaseoescopodoMVP emumplano
+executáveldedesenvolvimento,seguindoamesmaestruturadoexemploRADACHE fornecidocomoreferência.
+Aarquiteturapreviamentedefinidaémonolíticaemcamadas,comfrontendHTML5/TailwindCSS/Vanilla
+JavaScript,backendPythoncomFlask,bancoSQLite,comunicaçãoHTTPREST/JSON,armazenamentolocal
+dearquivoseintegraçõescomGoogleIdentity eGoogleCalendar. filecitenãoéinseridonodocumento;as
+decisõesestãoconsolidadasnos artefatostécnicosdoSIGOA.
+2. Blueprint Técnico da Solução
+OblueprintabaixoéomesmodirecionamentoarquiteturaldefinidoparaoSIGOA.Eleorganiza asoluçãoem
+camadasdeapresentação,aplicação/negócio,persistência,integrações externas eferramentas desuporte.
+
+=== PAGE 3 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+Figura 1 — Blueprint técnico da arquitetura em camadas do SIGOA.
+
+=== PAGE 4 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+2.1. Componentes que serão considerados na Sprint 1
+Componente Definição
+Frontend HTML5,TailwindCSS,Jinja2eVanillaJavaScript;estrutura
+responsivaeconsumoassíncronodaAPI.
+Backend Python3.10+ comFlask;rotasREST,sessõesHTTPeregras
+denegócio.
+Banco de dados SQLite3(academico.db),comintegridadereferencialpor
+chavesestrangeiras.
+Comunicação HTTP/HTTPSREST comJSONe,quandonecessário,
+multipart.
+Segurança Sessõesseguras,WerkzeugSecurity/PBKDF2 epreparação
+paraGoogleOAuth2.0.
+Arquivos Diretóriolocalsegurouploads/,associadoaousuário.
+3. Product Backlog
+Ashistórias abaixoforamderivadas doescopodoMVPjádefinidoparaoSIGOA.Asprioridades seguema
+lógicaP0=essencial paraoMVP, P1=importanteparaaprimeiraversãoevolutivaeP2=foradoMVP ou
+backlogfuturo.
+Épico 1 — Autenticação e Gestão de Usuário
+ID História de Usuário Prior. Critério de Aceitação
+US-SG01
+Comoestudante,querocriar
+umacontacomnome,e-maile
+senha,paraacessaroSIGOA.
+P0
+Dadosválidossãoaceitos;e-
+mailnãopodeserduplicado;
+senhaéarmazenada deforma
+segura.
+US-SG02
+Comoestudante,querorealizar
+login,para acessarminha
+agendadeformaautenticada.
+P0
+Credenciaisválidaspermitem
+acesso;credenciaisinválidas
+impedemacesso;sessãoé
+criadacomsegurança.
+US-SG03
+Comoestudante,quero
+encerrarminhasessão,para
+impediracessoindevidoà
+minhaagenda.
+P1
+Aosair,asessãoéinvalidadae
+páginasprotegidasnãopodem
+seracessadassem
+autenticação.
+Épico 2 — Agenda Acadêmica
+ID História de Usuário Prior. Critério de Aceitação
+US-SG04
+Comoestudante,quero
+visualizarumaagendamensal,
+paraconsultarmeus
+compromissosacadêmicos.
+P0
+Aoabriraagenda,omêsatual
+éexibidoeoseventosdo
+usuárioaparecemnas
+respectivasdatas.
+US-SG05
+Comoestudante,querocriarum
+eventoacadêmico,para
+registrarprovas,aulas,
+trabalhoseapresentações.
+P0
+Eventoexigetítulo,datae
+categoria;apóssalvar,aparece
+naagendaeficaassociadoao
+usuário.
+US-SG06
+Comoestudante,queroeditar
+umevento,paracorrigirou
+atualizarinformações
+acadêmicas.
+P0
+Aoselecionarumevento,seus
+dadossãocarregados;
+alteraçõesválidassão
+persistidaserefletidasna
+agenda.
+US-SG07
+Comoestudante,queroexcluir
+umevento,pararemover
+compromissosquenãosão
+maisnecessários.
+P0
+Osistemasolicitaconfirmação
+e,apósconfirmar,oevento
+deixadeaparecernaagenda.
+Épico 3 — Categorias e Organização Visual
+ID História de Usuário Prior. Critério de Aceitação
+US-SG08
+Comoestudante,quero
+identificareventospor
+categorias,paradiferenciar
+visualmenteminhasatividades.
+P0
+Cadaeventopossuiuma
+categoriaentreaulas,provas,
+trabalhoseapresentações,com
+identificaçãovisualnaagenda.
+Épico 4 — Lembretes
+ID História de Usuário Prior. Critério de Aceitação
+
+=== PAGE 5 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+US-SG09
+Comoestudante,queroreceber
+lembretesdecompromissos,
+parareduziroriscodeesquecer
+atividadesacadêmicas.
+P0
+Umlembreteconfiguradofica
+associadoaoeventoeé
+disparadoconformearegra
+definidapelosistema.
+Épico 5 — Integrações e Funcionalidades Futuras
+ID História de Usuário Prior. Critério de Aceitação
+US-SG10
+Comoestudante,quero
+sincronizarcompromissoscom
+oGoogleCalendar,para
+consultarminhaagendaem
+outroserviço.
+P2
+Aintegraçãoautenticaousuário
+egera/sincronizacompromissos
+conformeaspermissões
+concedidas.
+US-SG11
+Comoestudante,queroutilizar
+umavisãosemanaldaagenda,
+paraconsultarcompromissos
+commaiorgranularidade.
+P2
+Avisãosemanalapresentaos
+eventosorganizadospordiae
+horário.
+US-SG12
+Comoestudante,quero
+pesquisarcompromissos,para
+localizarrapidamenteuma
+atividadecadastrada.
+P2
+Umapesquisaretornasomente
+eventosdousuárioque
+correspondemaoscritérios
+informados.
+US-SG13
+Comoestudante,quero
+compartilharcompromissosou
+informaçõesacadêmicas,para
+facilitaraorganizaçãocoletiva.
+P2
+Ocompartilhamentosóocorre
+medianteaçãoexplícitado
+usuárioerespeitaas
+permissõesdefinidas.
+4. Estimativas e Planejamento — Story Points (Fibonacci)
+História Pontos Planejamento
+US-SG01 3 Sprint1
+US-SG02 5 Sprint1
+US-SG03 2 Sprint1
+US-SG04 5 Sprint1
+US-SG05 5 Sprint2
+US-SG06 3 Sprint2
+US-SG07 2 Sprint2
+US-SG08 3 Sprint2
+US-SG09 5 Sprint2/refinamento
+US-SG10 8 ForadoMVP/futuro
+US-SG11 5 ForadoMVP/futuro
+US-SG12 3 ForadoMVP/futuro
+US-SG13 8 ForadoMVP/futuro
+Totalestimadodobacklog:57pontos.Sprint1planejada:15pontos(US-SG01aUS-SG04).
+Acapacidade daSprint1foimantidadeliberadamenteconcentradaemfundaçãotécnica,autenticaçãoeprimeira
+visualizaçãofuncionaldaagenda,evitandocolocar oCRUDcompletodeeventosantesdabaseestar validada.
+5. Sprint Planning — Sprint 1 (Fundação)
+5.1. Objetivo da Sprint
+EstabelecerumabasetécnicaexecutávelparaoSIGOA—ambiente,repositório,estruturaemcamadas,banco
+dedados,autenticaçãoeagendamensal—deformaqueaSprint2possaconcentrar-senasfuncionalidades
+centraisdecriação,edição,exclusãoecategorizaçãodeeventos.
+5.2. Histórias selecionadas
+ US-SG01—Cadastrodeusuário(3pts)
+ US-SG02—Loginesessão(5pts)
+ US-SG03—Encerramentodesessão(2pts)
+ US-SG04—Visualizaçãodaagendamensal(5pts)
+TotaldaSprint1:15pontos.
+
+=== PAGE 6 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+5.3. Sprint Backlog — divisão em tarefas
+Área Tarefa
+Fundação CriarrepositórioGiteconvençãoinicialdebranches.
+Fundação Criarestruturadediretórios:app/,templates/,static/,database/,
+uploads/,tests/.
+Fundação CriarambientevirtualPythonearquivodedependências.
+Arquitetura ConfiguraraplicaçãoFlaskeorganizaçãoem
+camadas/blueprints.
+Banco CriarschemaSQLiteparauserseevents,comchavese
+índicesnecessários.
+Banco Configurarinicializaçãoautomáticadobancoedadosmínimos
+deteste.
+Segurança ImplementarhashsegurodesenhacomWerkzeugSecurity.
+US-SG01 Implementarformulárioerotadecadastro.
+US-SG01 Validare-mailúnicoedadosobrigatórios.
+US-SG02 Implementarloginecriaçãodesessão.
+US-SG03 Implementarlogouteproteçãoderotas.
+US-SG04 Criartemplatedaagendamensal.
+US-SG04 Criarconsultadoseventosdousuárioporintervalodedatas.
+Integração ConectarfrontendàAPI/rotasdobackendevalidarfluxo
+completo.
+Qualidade Criartestesautomatizadosmínimosparacadastro,logine
+isolamentodesessão.
+6. Sprint 1 — Fundação
+AFundaçãoorganiza oselementos necessários paraqueodesenvolvimentodoMVP ocorrasobreumaestrutura
+únicaereproduzível.Elaseguediretamente asdecisões arquiteturaisjádocumentadasparaoSIGOA.
+Elemento Configuração / entrega
+Ambiente Python3.10+;ambientevirtual;Flask;configuraçãoinicialdas
+dependências.
+Repositório Git;README;organizaçãoinicialdediretórios;convençõesde
+commitsebranches.
+Arquitetura Monolitoemcamadascomseparaçãoentreapresentação,
+aplicação/negócioepersistência.
+Frontend TemplatesJinja2,HTML5,Tailwind CSSeVanillaJavaScript.
+Backend FlaskcomrotasREST esessõesHTTPseguras.
+Banco SQLite3emacademico.db;tabelasuserseeventsparao
+núcleoinicial.
+Segurança WerkzeugSecurity/PBKDF2 parasenhas;validaçãodesessão
+erotasprotegidas.
+Testes unittestparaosfluxoscríticosdaSprint1.
+6.1. Estrutura inicial sugerida do projeto
+SIGOA/
+├── app.py
+├── requirements.txt
+├── README.md
+├── database/
+│ ├── schema.sql
+│ └── academico.db
+├── templates/
+│ ├── base.html
+│ ├── login.html
+│ ├── cadastro.html
+│ └── agenda.html
+├── static/
+│ ├── css/
+│ └── js/
+├── uploads/
+├── tests/
+
+=== PAGE 7 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+│ ├── test_auth.py
+│ └── test_agenda.py
+└── app/
+├── routes/
+├── services/
+└── repositories/
+7. Desenvolvimento — Incremento da Sprint 1
+Paraestaetapa,oincrementofuncionaldaSprint1édefinidocomoumaversãoexecutáveldoSIGOAque
+permiteaoestudanteiniciar osistema,cadastrar-se,autenticar-se,encerrarasessãoevisualizarsuaagenda
+mensal.OCRUD deeventoscompleto permaneceparaaSprint2,conformeapriorização.
+ AplicaçãoFlask inicialexecutandolocalmente.
+ BancoSQLitecriadoeconectado àaplicação.
+ Cadastrodeusuáriocomvalidaçãoearmazenamentosegurodasenha.
+ Logincomsessãoautenticada.
+ Logoutcominvalidaçãodasessão.
+ Rotaprotegidadaagenda mensal.
+ Consultadeeventos associadaaousuárioautenticado.
+ Interfaceinicial responsivacomJinja2/Tailwind/JavaScript.
+ Testesmínimosdos fluxos deautenticação.
+7.1. Acompanhamento do backlog
+História Planejado Critério de pronto Status Sprint 1
+US-SG01 Cadastro Cadastroválido+e-mailúnico
++senhaprotegida Avalidarnaexecução
+US-SG02 Login Credencialválidacriasessão;
+inválidaérejeitada Avalidarnaexecução
+US-SG03 Logout Sessãoencerradaerota
+protegidabloqueada Avalidarnaexecução
+US-SG04 Agendamensal Mêsatual exibidoeeventos
+dousuárioconsultados Avalidarnaexecução
+8. Sprint Review e Retrospectiva
+Comoosdocumentosfornecidos registram asdecisõesdearquiteturaeoescopo,masnãocomprovama
+execuçãofinal daSprint1,estaseçãofoiestruturadacomoregistrodevalidação.Apósaimplementação,os
+camposdeplanejado×realizadodevem seratualizados comoresultadoreal, semalterar oescopo
+retrospectivamente.
+8.1. Incremento a demonstrar
+ Cadastrodenovousuário.
+ Logineacessoàagenda.
+ Bloqueiodeacessoàagendasemautenticação.
+ Logout.
+ Visualizaçãodaagendamensal.
+ PersistêncianoSQLite.
+8.2. Planejado × realizado
+Item Planejado Resultado a registrar na Review
+Ambienteerepositório Configurados Concluído/parcial/nãoconcluído
+BancoSQLite Schemainicialeconexão Concluído/parcial/nãoconcluído
+Cadastro US-SG01 Concluído/parcial/nãoconcluído
+Login/logout US-SG02eUS-SG03 Concluído/parcial/nãoconcluído
+
+=== PAGE 8 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+Agendamensal US-SG04 Concluído/parcial/nãoconcluído
+Testes Fluxoscríticos Concluído/parcial/nãoconcluído
+8.3. Retrospectiva
+Tópico Registro
+O que funcionou Separaçãodascamadasedefiniçãoantecipadadobanco
+reduzemretrabalho.
+O que pode melhorar Detalharcontratosdasrotasantesdeimplementarofrontend.
+Impedimentos possíveis Configuraçãodoambiente,modelagemdobanco,
+autenticação/sessõeseintegraçãofrontend-backend.
+Aprendizado principal Umafundaçãopequenaefuncionalpermitevalidara
+arquiteturaantesdeadicionaroCRUDcompletodeeventos.
+9. Preparação da Sprint 2
+ASprint2deveráreceberobacklogrefinado apartirdoresultadodaSprint1.Ofocoéfecharonúcleo doMVP:
+permitirqueoestudante efetivamentegerencieseuscompromissosacadêmicosdentrodaagenda.
+9.1. Backlog refinado e priorizado para a Sprint 2
+Ordem História Pontos Prioridade
+1 US-SG05—Criarevento
+acadêmico 5 P0
+2 US-SG06—Editarevento 3 P0
+3 US-SG07—Excluirevento 2 P0
+4 US-SG08—Categorizar
+eventos 3 P0
+5 US-SG09—Lembretes 5 P0/apósrefinamentotécnico
+CapacidadenominalplanejadaparaaSprint2:até18pontos,condicionadaaoresultadoreal daSprint1eao
+refinamentodoslembretes.
+9.2. Objetivo da Sprint 2
+FecharocicloprincipaldoMVP doSIGOA—doacessoautenticadoaogerenciamentocompletodos
+compromissosacadêmicos—permitindocriar,visualizar,editar,excluirecategorizareventosnaagendamensal.
+9.3. Funcionalidades centrais do MVP
+ Cadastroeautenticaçãodoestudante.
+ Agendamensal.
+ Criaçãodeeventosacadêmicos.
+ Ediçãoeexclusãodeeventos.
+ Categorias:aulas,provas,trabalhoseapresentações.
+ Lembretesassociados aoscompromissos.
+ Persistênciadosdados porusuário.
+9.4. Itens explicitamente mantidos fora do MVP
+ SincronizaçãocomGoogleCalendar.
+ Visãosemanal.
+ Pesquisaavançadadecompromissos.
+ Compartilhamentodecompromissos.
+ FuncionalidadesdeIA.
+ Uploaddemateriaiscomofuncionalidade centraldoMVP.
+
+=== PAGE 9 ===
+SIGOA—BacklogeSprint1|UNEMAT|2026
+10. Rastreabilidade entre decisões e backlog
+ArastreabilidadeabaixoconectaasdecisõesdoBlueprintTécnicocomashistóriasdeusuárioeastarefasda
+Sprint1.
+Decisão arquitetural Backlog relacionado Implementação inicial
+Webresponsiva US-SG01–US-SG04 TemplatesJinja2,HTML5,Tailwinde
+JavaScript
+Monolitoemcamadas TodasdaSprint1 Separaçãoentreapresentação,negócio
+epersistência
+Flask/Python US-SG01–US-SG04 Configuraçãodoapp,rotasesessões
+SQLite US-SG01eUS-SG04 Schemaepersistênciainicial
+HTTP REST/JSON US-SG02eUS-SG04 Comunicaçãoentreinterfaceebackend
+Sessõesseguras/PBKDF2 US-SG02eUS-SG03 Autenticaçãoeproteçãodasrotas
+Testesautomatizados US-SG01–US-SG04 unittestparafluxoscríticos
+11. Definition of Done — Sprint 1
+ Atarefaestáimplementadanorepositório.
+ Ocódigoestáorganizadoconformeaarquiteturadefinida.
+ Afuncionalidadefuncionalocalmentesemerrosbloqueadores.
+ Osdados sãopersistidos corretamentenoSQLite.
+ Rotasprotegidasexigemautenticaçãoquando aplicável.
+ Critériosdeaceitaçãodahistóriaforamverificados.
+ Testesmínimosdafuncionalidadeforamexecutados.
+ OincrementopodeserdemonstradonaSprintReview.
+ DocumentaçãomínimadeexecuçãofoiatualizadanoREADME.
+12. Base documental utilizada
+Esteplanofoiconstruídoapartirdos seguintesartefatosfornecidos paraoprojeto:
+ SIGOA—BlueprintTécnicoeMatrizdeDecisões (MVP).
+ SIGOA—BlueprintdaArquiteturaProposta.
+ RADACHE—DoProjetoaoDesenvolvimento:BacklogeSprint1(utilizadoexclusivamentecomomodelo
+estruturaldeentrega).
+ DecisõesdeescopodoMVP registradasanteriormente noprojeto:cadastro/login, agendamensal,CRUDde
+eventos,categoriaselembretes;funcionalidades comocompartilhamento,chat,GoogleCalendar,upload,IA,
+visãosemanalepesquisamantidasforadoMVP.
+Observaçãometodológica:odocumentodoRADACHE foiusadocomoreferênciadeorganizaçãoenível de
+detalhamento,enquantoastecnologias,arquiteturaefuncionalidadesforamadaptadas aoSIGOA.Ondeos
+arquivosnãocomprovavam umaimplementaçãojáconcluída,otextofoimantidocomoplanejamentooucampo
+devalidação,evitandoafirmarcomorealizadoalgoqueaindadependedaexecuçãodaSprint.
+

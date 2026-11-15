@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>try { if (localStorage.getItem('sigoa_theme') === 'dark') document.documentElement.classList.add('dark-mode'); } catch (error) {}</script>
+    <title>SIGOA - Gestão da Agenda Acadêmica</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="/static/js/theme.js" defer></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-100/70 text-slate-800 min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-600/20">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-base text-slate-900 tracking-tight">SIGOA</span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                            MVP Acadêmico
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 hidden sm:block">Sistema de Gerenciamento de Organização Acadêmica</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions & User Info -->
+            <div class="flex items-center gap-2 sm:gap-4">
+
+                <button type="button" data-theme-toggle aria-label="Ativar modo escuro" title="Ativar modo escuro"
+                        class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+                    <i data-lucide="moon" class="w-4 h-4"></i>
+                </button>
+                
+                <!-- Central de Lembretes / Alertas Internos -->
+                <div class="relative">
+                    <button id="btnReminderBell" onclick="toggleReminderDropdown()" 
+                            class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="reminderBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                    </button>
+
+                    <!-- Dropdown de Lembretes -->
+                    <div id="reminderDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 z-50 animate-slide-down">
+                        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
+                            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-blue-600"></i>
+                                Lembretes Internos
+                            </span>
+                            <span id="reminderCountLabel" class="text-[10px] text-slate-400 font-medium">0 pendentes</span>
+                        </div>
+                        <div id="reminderList" class="space-y-2 max-h-64 overflow-y-auto text-xs">
+                            <p class="text-slate-400 text-center py-4 text-[11px]">Nenhum alerta crítico no momento.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Meus Arquivos -->
+                <button onclick="openFilesModal()" 
+                        class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition">
+                    <i data-lucide="folder" class="w-4 h-4 text-amber-500"></i>
+                    <span>Arquivos & Anexos</span>
+                </button>
+
+                <!-- Botão Sincronizar Google Agenda -->
+                <a href="/api/events/export/ics" title="Exportar para Google Agenda / iCal"
+                   class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Google Calendar</span>
+                </a>
+
+                <!-- User Profile, LGPD & Logout -->
+                <div class="flex items-center gap-2 sm:gap-3 pl-3 border-l border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+                            {{ user.name[:2].upper() if user.name else 'AC' }}
+                        </div>
+                        <div class="hidden sm:block text-left leading-tight">
+                            <span class="block text-xs font-bold text-slate-800">{{ user.name }}</span>
+                            <span class="block text-[10px] text-slate-400 truncate max-w-[130px]">{{ user.email }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Privacidade & LGPD -->
+                    <button onclick="openLgpdModal()" title="Privacidade e Direitos LGPD"
+                            class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </button>
+
+                    <a href="/logout" title="Sair da Conta"
+                       class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow flex flex-col gap-6">
+
+        <!-- Top Summary Cards (Resumo do Aluno) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Provas Próximas</span>
+                    <h3 id="statProvas" class="text-2xl font-bold text-rose-600 mt-0.5">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                    <i data-lucide="alarm-clock" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Trabalhos / Entregas</span>
+                    <h3 id="statEntregas" class="text-2xl font-bold text-emerald-600 mt-0.5">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total de Eventos</span>
+                    <h3 id="statTotal" class="text-2xl font-bold text-blue-600 mt-0.5">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between cursor-pointer hover:border-amber-300 transition"
+                 onclick="openFilesModal()">
+                <div>
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Arquivos Salvos</span>
+                    <h3 id="statArquivos" class="text-2xl font-bold text-amber-600 mt-0.5">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Banner de Alerta Crítico (se houver prova ou trabalho nas próximas 48h) -->
+        <div id="urgentAlertBanner" class="hidden p-4 rounded-2xl bg-amber-500/10 border border-amber-200/80 text-amber-900 flex items-center justify-between gap-4 animate-fade-in">
+            <div class="flex items-center gap-3">
+                <div class="p-2 rounded-xl bg-amber-500 text-white shrink-0">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-amber-800">Atenção aos Prazos Acadêmicos</h4>
+                    <p id="urgentAlertText" class="text-xs text-amber-900/90 mt-0.5"></p>
+                </div>
+            </div>
+            <button onclick="document.getElementById('urgentAlertBanner').classList.add('hidden')" class="text-amber-700 hover:text-amber-900 p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Barra de Controles da Agenda (Conforme PDF Dia 2) -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            
+            <!-- Navegação de Mês & Botão Hoje -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="prevPeriod()" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition" title="Período Anterior">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                </button>
+                <button onclick="goToToday()" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition">
+                    Hoje
+                </button>
+                <button onclick="nextPeriod()" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition" title="Próximo Período">
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+                <h2 id="currentPeriodLabel" class="text-base sm:text-lg font-bold text-slate-800 ml-2 capitalize">
+                    Setembro de 2026
+                </h2>
+            </div>
+
+            <!-- Seletor de Visualização (Dia / Semana / Mês) Conforme PDF -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl self-start md:self-auto">
+                <button id="viewBtnDay" onclick="switchView('day')" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+                    Dia
+                </button>
+                <button id="viewBtnWeek" onclick="switchView('week')" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+                    Semana
+                </button>
+                <button id="viewBtnMonth" onclick="switchView('month')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-white text-blue-600 shadow-xs transition">
+                    Mês
+                </button>
+            </div>
+
+            <!-- Filtros e importação de horários recorrentes -->
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="relative flex-grow sm:flex-grow-0">
+                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <select id="typeFilter" onchange="filterEvents()" 
+                            class="pl-8 pr-6 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600 text-slate-700 appearance-none font-medium">
+                        <option value="all">Todas as Categorias</option>
+                        <option value="prova">🔴 Provas</option>
+                        <option value="aula">🔵 Aulas</option>
+                        <option value="trabalho">🟣 Trabalhos</option>
+                        <option value="entrega">🟢 Entregas</option>
+                        <option value="outro">🟠 Outros</option>
+                    </select>
+                </div>
+
+                <button onclick="openCreateModal()" 
+                        class="py-2 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20 transition flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Adicionar Evento</span>
+                </button>
+            </div>
+
+        </div>
+
+        <section class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs" aria-labelledby="scheduleImportHeading">
+            <div class="mb-4">
+                <h3 id="scheduleImportHeading" class="text-sm font-bold text-slate-800">Importar hor&aacute;rio do curso</h3>
+                <p class="mt-1 text-xs text-slate-500">Envie os dois PDFs. Depois da leitura, selecione a sua fase.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div class="min-w-0">
+                    <label for="calendarPdf" class="mb-1 block text-[11px] font-semibold text-slate-600">1. Calend&aacute;rio acad&ecirc;mico</label>
+                    <label class="flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-2 transition hover:border-blue-400 hover:bg-blue-50/40">
+                        <i data-lucide="file-text" class="h-4 w-4 shrink-0 text-blue-600"></i>
+                        <span id="calendarPdfName" class="min-w-0 truncate text-xs text-slate-500">Selecione o PDF do calend&aacute;rio</span>
+                        <input id="calendarPdf" type="file" accept="application/pdf,.pdf" class="sr-only"
+                               onchange="updateSchedulePdfLabel('calendarPdf', 'calendarPdfName')" aria-label="Selecionar PDF do calend&aacute;rio acad&ecirc;mico">
+                    </label>
+                    <p class="mt-1 text-[10px] text-slate-400">Per&iacute;odo e dias letivos</p>
+                </div>
+                <div class="min-w-0">
+                    <label for="courseSchedulePdf" class="mb-1 block text-[11px] font-semibold text-slate-600">2. Hor&aacute;rio do curso</label>
+                    <label class="flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-2 transition hover:border-blue-400 hover:bg-blue-50/40">
+                        <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-blue-600"></i>
+                        <span id="courseSchedulePdfName" class="min-w-0 truncate text-xs text-slate-500">Selecione o PDF dos hor&aacute;rios</span>
+                        <input id="courseSchedulePdf" type="file" accept="application/pdf,.pdf" class="sr-only"
+                               onchange="updateSchedulePdfLabel('courseSchedulePdf', 'courseSchedulePdfName')" aria-label="Selecionar PDF do hor&aacute;rio do curso">
+                    </label>
+                    <p class="mt-1 text-[10px] text-slate-400">Grade com as fases do curso</p>
+                </div>
+            </div>
+            <div class="mt-4 flex flex-wrap items-end gap-3">
+                <button id="inspectScheduleButton" onclick="lerHorarioPdf()" class="h-10 rounded-xl bg-slate-700 px-4 text-xs font-bold text-white transition hover:bg-slate-800">
+                    Ler PDFs
+                </button>
+                <div id="schedulePhaseControls" class="hidden min-w-0">
+                    <label id="schedulePhaseLabel" class="mb-1 block text-[11px] font-semibold text-slate-600" for="schedulePhase">3. Selecione sua fase</label>
+                    <select id="schedulePhase" aria-label="Minha fase" class="h-10 w-full rounded-xl border border-slate-200 bg-white px-2 text-xs">
+                        <option value="">Selecione a fase</option>
+                    </select>
+                </div>
+                <button id="importScheduleButton" onclick="importarHorarioSelecionado()"
+                        class="hidden h-10 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-md transition hover:bg-emerald-700">
+                    <i data-lucide="calendar-plus" class="h-4 w-4"></i>
+                    <span>Importar aulas</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Legenda de Cores (Definida no PDF: vermelho p/ provas, azul p/ aulas/trabalhos, verde p/ entregas) -->
+        <div class="flex flex-wrap items-center gap-4 px-2 text-xs text-slate-600 font-medium">
+            <span class="text-slate-400 text-[11px] uppercase tracking-wider font-semibold">Legenda de Cores:</span>
+            <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-red-600"></span>
+                <span>Provas</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                <span>Aulas</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-purple-600"></span>
+                <span>Trabalhos / Seminários</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-emerald-600"></span>
+                <span>Entregas de Projeto</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                <span>Outros</span>
+            </div>
+        </div>
+
+        <!-- Grade de Visualização (Alternada dinamicamente via JS) -->
+        <div id="calendarContainer" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col flex-grow min-h-[500px]">
+            <!-- Conteúdo injetado via app.js -->
+        </div>
+
+    </main>
+
+    <!-- Modal de Criar Evento (Conforme PDF Dia 2) -->
+    <div id="createEventModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+            
+            <!-- Cabeçalho do Modal com Botão Fechar (X) conforme PDF -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800">Novo Compromisso Acadêmico</h3>
+                </div>
+                <button onclick="closeCreateModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Formulário -->
+            <form id="createEventForm" onsubmit="handleCreateEvent(event)" class="mt-4 space-y-4">
+                
+                <!-- Título -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Título do Evento *</label>
+                    <input type="text" id="createTitle" name="title" required placeholder="Ex: Prova Bimestral de Arquitetura"
+                           class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-600 text-slate-800">
+                </div>
+
+                <!-- Disciplina -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Disciplina / Matéria</label>
+                    <input type="text" id="createDiscipline" name="discipline" placeholder="Ex: Arquitetura de Computadores"
+                           class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-600 text-slate-800">
+                </div>
+
+                <!-- Data e Horários -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data *</label>
+                        <input type="date" id="createDate" name="event_date" required
+                               class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hora Início</label>
+                        <input type="time" id="createStartTime" name="start_time"
+                               class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hora Término</label>
+                        <input type="time" id="createEndTime" name="end_time"
+                               class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                    </div>
+                </div>
+
+                <!-- Seleção de Tipo e Seletor de Cor (Conforme PDF) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Evento</label>
+                        <select id="createEventType" name="event_type" onchange="autoAssignColor(this.value, 'createColor')"
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600 font-medium">
+                            <option value="aula">Aula</option>
+                            <option value="prova">Prova</option>
+                            <option value="entrega">Entrega de Trabalho</option>
+                            <option value="trabalho">Trabalho / Seminário</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Seletor de Cor</label>
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="color" id="createColor" name="color" value="#2563eb" 
+                                   class="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent">
+                            <span class="text-xs text-slate-500">Cor do marcador</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sistema de Alerta / Lembrete Interno (Conforme PDF) -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Lembrete Interno (Alerta)</label>
+                    <select id="createReminder" name="reminder_type"
+                            class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                        <option value="none">Sem lembrete</option>
+                        <option value="at_time">No horário do evento</option>
+                        <option value="1h">1 hora antes</option>
+                        <option value="1d">1 dia antes</option>
+                        <option value="2d">2 dias antes</option>
+                        <option value="1w">1 semana antes</option>
+                    </select>
+                </div>
+
+                <!-- Descrição -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Descrição / Instruções</label>
+                    <textarea id="createDescription" name="description" rows="2" placeholder="Ex: Conteúdo dos capítulos 1 a 4, levar calculadora..."
+                              class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-600 text-slate-800"></textarea>
+                </div>
+
+                <!-- Upload de Arquivo Anexo ao Evento (Banco de Dados por Usuário) -->
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                        <i data-lucide="paperclip" class="w-3.5 h-3.5 text-blue-600"></i>
+                        Anexar Arquivo Acadêmico (PDF, DOCX, Imagem)
+                    </label>
+                    <input type="file" id="createFile" name="file"
+                           class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                    <p class="text-[10px] text-slate-400 mt-1">O arquivo será armazenado exclusivamente no seu usuário.</p>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeCreateModal()"
+                            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20 transition flex items-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Salvar Evento</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Editar Evento (Conforme PDF Dia 2) -->
+    <div id="editEventModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+            
+            <!-- Cabeçalho -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i data-lucide="edit" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800">Editar Compromisso</h3>
+                </div>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Formulário Pré-preenchido -->
+            <form id="editEventForm" onsubmit="handleUpdateEvent(event)" class="mt-4 space-y-4">
+                <input type="hidden" id="editEventId" name="event_id">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Título do Evento *</label>
+                    <input type="text" id="editTitle" name="title" required
+                           class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-600 text-slate-800">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Disciplina / Matéria</label>
+                    <input type="text" id="editDiscipline" name="discipline"
+                           class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-600 text-slate-800">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data *</label>
+                        <input type="date" id="editDate" name="event_date" required
+                               class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hora Início</label>
+                        <input type="time" id="editStartTime" name="start_time"
+                               class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hora Término</label>
+                        <input type="time" id="editEndTime" name="end_time"
+                               class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Evento</label>
+                        <select id="editEventType" name="event_type" onchange="autoAssignColor(this.value, 'editColor')"
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600 font-medium">
+                            <option value="aula">Aula</option>
+                            <option value="prova">Prova</option>
+                            <option value="entrega">Entrega de Trabalho</option>
+                            <option value="trabalho">Trabalho / Seminário</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Seletor de Cor</label>
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="color" id="editColor" name="color" 
+                                   class="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent">
+                            <span class="text-xs text-slate-500">Cor do marcador</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Lembrete Interno</label>
+                        <select id="editReminder" name="reminder_type"
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                            <option value="none">Sem lembrete</option>
+                            <option value="at_time">No horário do evento</option>
+                            <option value="1h">1 hora antes</option>
+                            <option value="1d">1 dia antes</option>
+                            <option value="2d">2 dias antes</option>
+                            <option value="1w">1 semana antes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                        <select id="editStatus" name="is_completed"
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-600">
+                            <option value="0">Pendente</option>
+                            <option value="1">Concluído</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Descrição</label>
+                    <textarea id="editDescription" name="description" rows="2"
+                              class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-600 text-slate-800"></textarea>
+                </div>
+
+                <!-- Arquivos Atrelados a este Evento -->
+                <div class="pt-2 border-t border-slate-100">
+                    <span class="block text-xs font-semibold text-slate-700 mb-1">Arquivos Anexados</span>
+                    <div id="editFilesList" class="space-y-1.5 mb-2">
+                        <p class="text-[11px] text-slate-400">Nenhum anexo para este compromisso.</p>
+                    </div>
+
+                    <label class="block text-xs font-medium text-slate-600 mb-1 flex items-center gap-1">
+                        <i data-lucide="plus" class="w-3.5 h-3.5 text-blue-600"></i>
+                        Adicionar novo anexo
+                    </label>
+                    <input type="file" id="editFile" name="file"
+                           class="w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                </div>
+
+                <!-- Integração com Google API (Sincronização 1 Clique) -->
+                <div class="p-3 rounded-xl bg-blue-50/60 border border-blue-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <span class="text-xs font-semibold text-slate-700">Google Calendar</span>
+                    </div>
+                    <a id="btnSyncGoogleEvent" href="#" target="_blank"
+                       class="px-3 py-1 bg-white hover:bg-slate-50 border border-slate-200 text-blue-600 rounded-lg text-xs font-semibold shadow-2xs transition flex items-center gap-1">
+                        <span>Adicionar ao Google</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+
+                <!-- Botões Excluir e Salvar (Conforme PDF) -->
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <button type="button" onclick="handleDeleteEvent()"
+                            class="px-4 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition flex items-center gap-1.5">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        <span>Excluir</span>
+                    </button>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeEditModal()"
+                                class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                                class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20 transition flex items-center gap-1.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                            <span>Salvar Alterações</span>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal do Gerenciador de Arquivos Acadêmicos (DB por Usuário) -->
+    <div id="filesModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-2xl shadow-2xl animate-fade-in max-h-[85vh] flex flex-col">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <i data-lucide="folder-archive" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Meus Arquivos & Materiais Acadêmicos</h3>
+                        <p class="text-[11px] text-slate-500">Documentos vinculados com segurança ao seu perfil</p>
+                    </div>
+                </div>
+                <button onclick="closeFilesModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Upload Rápido de Novo Arquivo -->
+            <form id="fileUploadForm" onsubmit="handleDirectFileUpload(event)" class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center gap-3">
+                <input type="file" id="directFileInput" required
+                       class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                <button type="submit"
+                        class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold shrink-0 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                    <span>Enviar Arquivo</span>
+                </button>
+            </form>
+
+            <!-- Lista de Arquivos com Rolagem -->
+            <div class="overflow-y-auto flex-grow space-y-2 pr-1" id="userFilesContainer">
+                <div class="text-center py-8 text-slate-400 text-xs">Carregando seus arquivos...</div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex justify-end">
+                <button onclick="closeFilesModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                    Fechar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal de Privacidade & Direitos LGPD (Lei 13.709/2018) -->
+    <div id="lgpdModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-fade-in max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Privacidade & Direitos do Titular (LGPD)</h3>
+                        <p class="text-[11px] text-slate-400">Lei Geral de Proteção de Dados (Lei nº 13.709/2018)</p>
+                    </div>
+                </div>
+                <button onclick="closeLgpdModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="mt-4 space-y-3 text-xs text-slate-600 leading-relaxed">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <h4 class="font-bold text-slate-800 mb-1">Seus dados e finalidade:</h4>
+                    <p>O SIGOA armazena unicamente seu nome, e-mail institucional e dados da sua rotina de estudos para organizar sua agenda. Nenhum dado é compartilhado com terceiros.</p>
+                </div>
+
+                <!-- Ações do Titular (Art. 18 da LGPD) -->
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-bold text-slate-800">Exercer seus Direitos (Art. 18):</h4>
+                    
+                    <!-- Portabilidade -->
+                    <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-white">
+                        <div>
+                            <div class="font-semibold text-slate-800">Portabilidade dos Dados (Art. 18, V)</div>
+                            <div class="text-[11px] text-slate-500">Baixe uma cópia completa de todos os seus eventos e arquivos em JSON.</div>
+                        </div>
+                        <a href="/api/user/export-data" 
+                           class="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg font-semibold text-xs transition flex items-center gap-1 shrink-0">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Exportar</span>
+                        </a>
+                    </div>
+
+                    <!-- Eliminação / Esquecimento -->
+                    <div class="flex items-center justify-between p-3 rounded-xl border border-rose-200 bg-rose-50/50">
+                        <div>
+                            <div class="font-semibold text-rose-800">Eliminação Definitiva da Conta (Art. 18, VI)</div>
+                            <div class="text-[11px] text-rose-600/90">Exclui permanentemente sua conta, todos os eventos e todos os arquivos em disco.</div>
+                        </div>
+                        <button type="button" onclick="handleDeleteAccountLgpd()"
+                                class="px-3 py-1.5 bg-rose-600 text-white hover:bg-rose-700 rounded-lg font-semibold text-xs transition flex items-center gap-1 shrink-0">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Excluir Tudo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-slate-100 flex justify-end">
+                <button onclick="closeLgpdModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts da Aplicação -->
+    <script src="/static/js/app.js?v=2.7"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

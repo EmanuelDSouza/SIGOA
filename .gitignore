@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+uploads/*
+!uploads/.gitkeep
+docs/_sprint4_test_run/
+*.log
+.DS_Store
+Thumbs.db

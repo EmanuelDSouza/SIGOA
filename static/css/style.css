@@ -1,0 +1,261 @@
+/* Estilos complementares e refinamento de interface para o SIGOA */
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-down {
+    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Estilização da Grade do Calendário */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-day-cell {
+    min-height: 110px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+@media (max-width: 768px) {
+    .calendar-day-cell {
+        min-height: 75px;
+    }
+}
+
+.calendar-day-cell:hover {
+    background-color: #f8fafc;
+}
+
+.calendar-day-cell.is-today {
+    background-color: #f0fdf4;
+}
+
+.calendar-day-cell.is-other-month {
+    background-color: #fcfcfd;
+    color: #94a3b8;
+}
+
+/* Pílula de Evento */
+.event-pill {
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.event-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Seletores de Cores */
+.color-radio:checked + label {
+    ring-width: 2px;
+    ring-offset-width: 2px;
+    transform: scale(1.1);
+}
+
+/* Tema escuro compartilhado entre agenda, login, cadastro e redefinição. */
+html.dark-mode {
+    color-scheme: dark;
+}
+
+html.dark-mode body {
+    background-color: #0b1220 !important;
+    color: #e2e8f0 !important;
+}
+
+html.dark-mode [class~="bg-white"],
+html.dark-mode [class~="bg-white/70"],
+html.dark-mode [class~="bg-white/80"],
+html.dark-mode [class~="bg-white/90"] {
+    background-color: #111c2e !important;
+}
+
+html.dark-mode [class~="bg-slate-50"],
+html.dark-mode [class~="bg-slate-50/80"],
+html.dark-mode [class~="bg-slate-100"],
+html.dark-mode [class~="bg-slate-100/70"],
+html.dark-mode [class~="bg-slate-200"] {
+    background-color: #1b293d !important;
+}
+
+html.dark-mode [class~="bg-blue-50"],
+html.dark-mode [class~="bg-blue-50/60"],
+html.dark-mode [class~="bg-blue-100"],
+html.dark-mode [class~="bg-indigo-50"] {
+    background-color: #172c4a !important;
+}
+
+html.dark-mode [class~="bg-rose-50"],
+html.dark-mode [class~="bg-rose-50/50"] {
+    background-color: #3a202c !important;
+}
+
+html.dark-mode [class~="bg-emerald-50"] {
+    background-color: #15362f !important;
+}
+
+html.dark-mode [class~="bg-amber-50"] {
+    background-color: #3a3020 !important;
+}
+
+html.dark-mode [class~="text-slate-900"] { color: #f8fafc !important; }
+html.dark-mode [class~="text-slate-800"] { color: #e8eef7 !important; }
+html.dark-mode [class~="text-slate-700"] { color: #d5deeb !important; }
+html.dark-mode [class~="text-slate-600"] { color: #c1ccda !important; }
+html.dark-mode [class~="text-slate-500"] { color: #a5b2c3 !important; }
+html.dark-mode [class~="text-slate-400"] { color: #8998ac !important; }
+
+html.dark-mode [class~="text-blue-700"] { color: #93c5fd !important; }
+html.dark-mode [class~="text-blue-600"] { color: #7db6ff !important; }
+html.dark-mode [class~="text-rose-800"],
+html.dark-mode [class~="text-rose-700"],
+html.dark-mode [class~="text-rose-600"] { color: #fda4af !important; }
+html.dark-mode [class~="text-emerald-700"],
+html.dark-mode [class~="text-emerald-600"] { color: #6ee7b7 !important; }
+html.dark-mode [class~="text-amber-800"],
+html.dark-mode [class~="text-amber-700"],
+html.dark-mode [class~="text-amber-600"] { color: #fcd34d !important; }
+
+html.dark-mode [class~="border-slate-100"],
+html.dark-mode [class~="border-slate-200"],
+html.dark-mode [class~="border-slate-200/70"],
+html.dark-mode [class~="border-slate-200/80"],
+html.dark-mode [class~="border-slate-300"],
+html.dark-mode [class~="border-blue-100"] {
+    border-color: #2c3a4f !important;
+}
+
+html.dark-mode [class~="hover:bg-slate-50"]:hover,
+html.dark-mode [class~="hover:bg-slate-100"]:hover,
+html.dark-mode [class~="hover:bg-slate-200/70"]:hover {
+    background-color: #26364d !important;
+}
+
+html.dark-mode [class~="hover:bg-blue-50"]:hover,
+html.dark-mode [class~="hover:bg-blue-50/30"]:hover {
+    background-color: #203b60 !important;
+}
+
+html.dark-mode input:not([type="color"]),
+html.dark-mode textarea,
+html.dark-mode select {
+    background-color: #152238 !important;
+    color: #e2e8f0 !important;
+    border-color: #35465e !important;
+}
+
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+    color: #8796aa !important;
+}
+
+html.dark-mode select option {
+    background-color: #152238;
+    color: #e2e8f0;
+}
+
+html.dark-mode .calendar-grid {
+    background-color: #27364b;
+}
+
+html.dark-mode .calendar-day-cell {
+    border-color: #2c3a4f;
+}
+
+html.dark-mode .calendar-day-cell:hover {
+    background-color: #18283d !important;
+}
+
+html.dark-mode .calendar-day-cell.is-today {
+    background-color: #15362f !important;
+}
+
+html.dark-mode .calendar-day-cell.is-other-month {
+    background-color: #131e30 !important;
+    color: #718198;
+}
+
+/* Alertas de prazo: cores explícitas para manter contraste no tema escuro. */
+html.dark-mode #urgentAlertBanner {
+    background-color: #332b1b !important;
+    border-color: #705b2a !important;
+    color: #fde68a !important;
+}
+
+html.dark-mode #urgentAlertBanner h4,
+html.dark-mode #urgentAlertText,
+html.dark-mode #urgentAlertBanner button {
+    color: #fde68a !important;
+}
+
+html.dark-mode #urgentAlertBanner button:hover {
+    color: #fff7d6 !important;
+    background-color: #4a3b20 !important;
+}
+
+html.dark-mode #reminderBadge {
+    --tw-ring-color: #111c2e !important;
+}
+
+html.dark-mode #reminderDropdown {
+    background-color: #111c2e !important;
+    border-color: #394b63 !important;
+}
+
+html.dark-mode #reminderDropdown > div:first-child {
+    border-color: #34445a !important;
+}
+
+html.dark-mode #reminderList > button {
+    background-color: #1b293d !important;
+    border-color: #3a4d66 !important;
+}
+
+html.dark-mode #reminderList > button:hover {
+    background-color: #263b58 !important;
+}
+
+html.dark-mode #reminderList > button div span:first-child {
+    color: #fda4af !important;
+}
+
+html.dark-mode #reminderList > button .text-slate-400 {
+    color: #aebbd0 !important;
+}
+
+html.dark-mode #reminderList > button > .text-slate-800 {
+    color: #f1f5f9 !important;
+}
+
+html.dark-mode ::-webkit-scrollbar-track { background: #111c2e; }
+html.dark-mode ::-webkit-scrollbar-thumb { background: #3a4b63; }
+html.dark-mode ::-webkit-scrollbar-thumb:hover { background: #52647d; }
